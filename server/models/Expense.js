@@ -11,8 +11,7 @@ class Expense {
         this.updated_at  = updated_at;
     }
 
-    async save()
-    {
+    async save() {
         const sql = `INSERT INTO expenses (user_id, category, description, amount) VALUES (?, ?, ?, ?)`;
         const params = [ this.user_id, this.category, this.description, this.amount ];
         const [result] = await db.execute(sql, params);
@@ -20,16 +19,19 @@ class Expense {
         return this;
     }
 
-    static async findAllByUserId(userId)
-    {
+    static async findAllByUserId(userId) {
         const sql = `SELECT * FROM expenses WHERE user_id = ? ORDER BY updated_at DESC`;
         const [rows] = await db.execute(sql, [userId]);
         return rows.map(r => new Expense(r));
     }
 
+    static async findById(id) {
+        const sql = `SELECT * FROM expenses WHERE expense_id = ?`;
+        const [rows] = await db.execute(sql, [id]);
+        return rows.length > 0 ? new Expense(rows[0]) : null;
+    }
 
-    async update()
-    {
+    async update() {
         const sql = `UPDATE expenses SET category = ?, description = ?, amount = ? WHERE expense_id = ?`;
         const params = [ this.category, this.description, this.amount, this.id ];
         await db.execute(sql, params);
